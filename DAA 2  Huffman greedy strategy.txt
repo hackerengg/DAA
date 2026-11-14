@@ -1,0 +1,58 @@
+import heapq
+from itertools import count
+
+def generate_codes(tree, code, codes):
+
+    if isinstance(tree, str):
+        codes[tree] = code if code else "0"
+        return
+
+    left, right = tree
+
+    generate_codes(left, code + "0", codes)
+    generate_codes(right, code + "1", codes)
+
+
+def huffman_coding(frequency):
+
+    heap = []
+    unique = count()
+
+    for ch, freq in frequency.items():
+        heapq.heappush(heap, (freq, next(unique), ch))
+
+    while len(heap) > 1:
+
+        left = heapq.heappop(heap)
+        right = heapq.heappop(heap)
+
+        merged = (left[2], right[2])
+
+        heapq.heappush(
+            heap,
+            (left[0] + right[0], next(unique), merged)
+        )
+
+    tree = heap[0][2]
+
+    codes = {}
+    generate_codes(tree, "", codes)
+
+    print("\nHuffman Codes:")
+
+    for ch, code in codes.items():
+        print(ch, ":", code)
+
+
+# Main program
+
+n = int(input("Enter number of characters: "))
+
+frequency = {}
+
+for i in range(n):
+    ch = input("Enter character: ")
+    freq = int(input("Enter frequency: "))
+    frequency[ch] = freq
+
+huffman_coding(frequency)
